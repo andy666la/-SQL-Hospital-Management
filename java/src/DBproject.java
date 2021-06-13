@@ -30,19 +30,15 @@ import java.util.ArrayList;
  *
  */
 
-public class DBproject{
-	//reference to physical database connection
+public class DBproject{//reference to physical database connection
 	private Connection _connection = null;
 	static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
 	
 	public DBproject(String dbname, String dbport, String user, String passwd) throws SQLException {
 		System.out.print("Connecting to database...");
-		try{
-			// constructs the connection URL
+		try{// constructs the connection URL
 			String url = "jdbc:postgresql://localhost:" + dbport + "/" + dbname;
-			System.out.println ("Connection URL: " + url + "\n");
-			
-			// obtain a physical connection
+			System.out.println ("Connection URL: " + url + "\n");// obtain a physical connection
 	        this._connection = DriverManager.getConnection(url, user, passwd);
 	        System.out.println("Done");
 		}catch(Exception e){
@@ -59,14 +55,9 @@ public class DBproject{
 	 * @param sql the input SQL string
 	 * @throws java.sql.SQLException when update failed
 	 * */
-	public void executeUpdate (String sql) throws SQLException { 
-		// creates a statement object
-		Statement stmt = this._connection.createStatement ();
-
-		// issues the update instruction
-		stmt.executeUpdate (sql);
-
-		// close the instruction
+	public void executeUpdate (String sql) throws SQLException { // creates a statement object
+		Statement stmt = this._connection.createStatement ();// issues the update instruction
+		stmt.executeUpdate (sql);// close the instruction
 	    stmt.close ();
 	}//end executeUpdate
 
@@ -79,11 +70,8 @@ public class DBproject{
 	 * @return the number of rows returned
 	 * @throws java.sql.SQLException when failed to execute the query
 	 */
-	public int executeQueryAndPrintResult (String query) throws SQLException {
-		//creates a statement object
-		Statement stmt = this._connection.createStatement ();
-
-		//issues the query instruction
+	public int executeQueryAndPrintResult (String query) throws SQLException {//creates a statement object
+		Statement stmt = this._connection.createStatement ();//issues the query instruction
 		ResultSet rs = stmt.executeQuery (query);
 
 		/*
@@ -92,9 +80,7 @@ public class DBproject{
 		 */
 		ResultSetMetaData rsmd = rs.getMetaData ();
 		int numCol = rsmd.getColumnCount ();
-		int rowCount = 0;
-		
-		//iterates through the result set and output them to standard out.
+		int rowCount = 0;//iterates through the result set and output them to standard out.
 		boolean outputHeader = true;
 		while (rs.next()){
 			if(outputHeader){
@@ -122,11 +108,8 @@ public class DBproject{
 	 * @return the query result as a list of records
 	 * @throws java.sql.SQLException when failed to execute the query
 	 */
-	public List<List<String>> executeQueryAndReturnResult (String query) throws SQLException { 
-		//creates a statement object 
-		Statement stmt = this._connection.createStatement (); 
-		
-		//issues the query instruction 
+	public List<List<String>> executeQueryAndReturnResult (String query) throws SQLException { //creates a statement object 
+		Statement stmt = this._connection.createStatement (); //issues the query instruction 
 		ResultSet rs = stmt.executeQuery (query); 
 	 
 		/*
@@ -135,9 +118,7 @@ public class DBproject{
 		*/ 
 		ResultSetMetaData rsmd = rs.getMetaData (); 
 		int numCol = rsmd.getColumnCount (); 
-		int rowCount = 0; 
-	 
-		//iterates through the result set and saves the data returned by the query. 
+		int rowCount = 0; //iterates through the result set and saves the data returned by the query. 
 		boolean outputHeader = false;
 		List<List<String>> result  = new ArrayList<List<String>>(); 
 		while (rs.next()){
@@ -158,16 +139,11 @@ public class DBproject{
 	 * @return the number of rows returned
 	 * @throws java.sql.SQLException when failed to execute the query
 	 */
-	public int executeQuery (String query) throws SQLException {
-		//creates a statement object
-		Statement stmt = this._connection.createStatement ();
-
-		//issues the query instruction
+	public int executeQuery (String query) throws SQLException {//creates a statement object
+		Statement stmt = this._connection.createStatement ();//issues the query instruction
 		ResultSet rs = stmt.executeQuery (query);
 
-		int rowCount = 0;
-
-		//iterates through the result set and count nuber of results.
+		int rowCount = 0;//iterates through the result set and count nuber of results.
 		if(rs.next()){
 			rowCount++;
 		}//end while
@@ -201,8 +177,7 @@ public class DBproject{
 			if (this._connection != null){
 				this._connection.close ();
 			}//end if
-		}catch (SQLException e){
-	         // ignored.
+		}catch (SQLException e){// ignored.
 		}//end try
 	}//end cleanup
 
@@ -255,7 +230,7 @@ public class DBproject{
 				System.out.println("9. < EXIT");
 				
 				switch (readChoice()){
-					case 1: AddDoctor(esql); break;
+					case 1: AddDoctor(esql); break;/*
 					case 2: AddPatient(esql); break;
 					case 3: AddAppointment(esql); break;
 					case 4: MakeAppointment(esql); break;
@@ -263,7 +238,7 @@ public class DBproject{
 					case 6: ListAvailableAppointmentsOfDepartment(esql); break;
 					case 7: ListStatusNumberOfAppointmentsPerDoctor(esql); break;
 					case 8: FindPatientsCountWithStatus(esql); break;
-					case 9: keepon = false; break;
+					case 9: keepon = false; break;*/
 				}
 			}
 		}catch(Exception e){
@@ -336,8 +311,7 @@ public class DBproject{
 			String input4 = in.readLine();
 			query += "\'" + input4 + "\');";
 
-			esql.executeUpdate(query);
-			//System.out.println("total row: " + row);
+			esql.executeUpdate(query);//System.out.println("total row: " + row);
 		}catch(Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -366,7 +340,6 @@ public class DBproject{
 			query += "\'" + input10 + "\');";
 			
 			esql.executeUpdate(query);
-			//System.out.println("total row: " + row);
 		}catch(Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -389,7 +362,6 @@ public class DBproject{
 			query += "\'" + input14 + "\');";
 			
 			esql.executeUpdate(query);
-			//System.out.println("total row(s): " + row);
 		}catch(Exception e) {
 			System.err.println(e.getMessage());
 		}
