@@ -186,6 +186,13 @@ public class DBproject{//reference to physical database connection
 	 * 
 	 * @param args the command line arguments this inclues the <mysql|pgsql> <login file>
 	 */
+	 
+	
+	static void checkid(String str) throws Exception { //any id
+	  if (!str.matches("^[0-9]$")) { 
+		  throw new IllegalArgumentException("ERROR: Please enter number for the id");
+	  }
+   }
 	public static void main (String[] args) {
 		if (args.length != 3) {
 			System.err.println (
@@ -300,6 +307,7 @@ public class DBproject{//reference to physical database connection
 			String query = "INSERT INTO Doctor (doctor_ID, name, specialty, did) VALUES (";
 			System.out.print("\tPlease enter doctorid: ");
 			String input1 = in.readLine();
+			checkid(input1);
 			query += "\'"+ input1 + "\',";
 			System.out.print("\tPlease enter doctor name: ");
 			String input2 = in.readLine();
