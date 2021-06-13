@@ -219,6 +219,24 @@ public class DBproject{//reference to physical database connection
 			
 			boolean keepon = true;
 			while(keepon){
+				System.out.println(
+					"\n\n*******************************************************************************\n" +
+					"                 Welcome to your Hospital Database management System!     \n" +
+					"***********************************************************************************\n");
+       	   System.out.println();
+     	  	   System.out.println("--------------------------Welcome to---------------------------");
+     	  	   System.out.println("---------------------------------------------------------------");
+       	   System.out.println(" 88                                88                    88    ");
+       	   System.out.println(" 88                                     88               88    ");
+      	   System.out.println(" 88,dba,  ,adba,   ,adba  888888,  88 MM88MMM  ,aPYba,   88    ");
+      	   System.out.println(" 88   88 8b    d8 88      88    ad 88   8P     88   88   88    ");
+      	   System.out.println(" 88   88 8b    88  ,8888, 88   ad  88   8P    88     88  88    ");
+            System.out.println(" 88   88 8b    d8      88 88aad    88   8P P   88    88  88    ");
+       	   System.out.println(" 88   88  `YbdP'  aadba,  88       88   8PP     'aPY' 8P 88888 ");
+       	   System.out.println("                          88                                   ");
+       	   System.out.println("                          88                                   ");
+       	   System.out.println("---------------------------------------------------------------");
+       	   System.out.println();
 				System.out.println("MAIN MENU");
 				System.out.println("---------");
 				System.out.println("1. Add Doctor");
@@ -236,11 +254,11 @@ public class DBproject{//reference to physical database connection
 					case 2: AddPatient(esql); break;
 					case 3: AddAppointment(esql); break;
 					case 4: MakeAppointment(esql); break;
-					/*case 5: ListAppointmentsOfDoctor(esql); break;
+					case 5: ListAppointmentsOfDoctor(esql); break;
 					case 6: ListAvailableAppointmentsOfDepartment(esql); break;
 					case 7: ListStatusNumberOfAppointmentsPerDoctor(esql); break;
 					case 8: FindPatientsCountWithStatus(esql); break;
-					case 9: keepon = false; break;*/
+					case 9: keepon = false; break;
 				}
 			}
 		}catch(Exception e){
@@ -574,7 +592,7 @@ public class DBproject{//reference to physical database connection
 
 	}
 
-	/*public static void ListAppointmentsOfDoctor(DBproject esql) {//5 List appointments of a given doctor:
+	public static void ListAppointmentsOfDoctor(DBproject esql) {//5 List appointments of a given doctor:
 		try {
 			String query = "SELECT A.appnt_ID, A.adate, A.time_slot, A.status FROM Appointment A, has_appointment H WHERE A.appnt_ID = H.appt_id AND (A.status = \'AC\' OR A.status = \'AV\') AND H.doctor_id = \'";
 			System.out.print("\tPlease enter doctor id: ");
@@ -594,7 +612,6 @@ public class DBproject{//reference to physical database connection
 			System.err.println(e.getMessage());
 		}
 	}
-
 	public static void ListAvailableAppointmentsOfDepartment(DBproject esql) {//6 List all available appointments of a given department:
 		try {
 			String query = "SELECT A.appnt_ID, A.adate, A.time_slot FROM Appointment A, has_appointment H, Doctor D, Department DEPT \nWHERE A.status = \'AV\' AND A.appnt_ID = H.appt_id AND H.doctor_id = D.doctor_ID AND D.did = DEPT.dept_ID AND DEPT.name =  \' ";
@@ -605,14 +622,12 @@ public class DBproject{//reference to physical database connection
 			System.out.print("\tPlease enter the specific date: (MM/DD/YEAR) ");
 			String date = in.readLine();
 			query += (date + "\');");
-
 			int row = esql.executeQueryAndPrintResult(query);
 			System.out.println("total row(s): " + row);
 		}catch(Exception e) {
 			System.err.println(e.getMessage());
 		}
 	}
-
 	public static void ListStatusNumberOfAppointmentsPerDoctor(DBproject esql) {//7 List total number of different types of appointments per doctor in descending order
 		try {
 			String query = "SELECT D.doctor_ID, A.status, COUNT(*) AS NAPPNT FROM Appointment A, has_appointment H, Doctor D WHERE A.appnt_ID = H.appt_id AND H.doctor_id = D.doctor_ID GROUP BY D.doctor_ID, A.status ORDER BY NAPPNT DESC";
@@ -636,5 +651,4 @@ public class DBproject{//reference to physical database connection
 			System.err.println(e.getMessage());
 		}
 	}
-	*/
 }
