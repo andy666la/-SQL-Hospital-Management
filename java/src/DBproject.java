@@ -247,8 +247,12 @@ public class DBproject{//reference to physical database connection
 				System.out.println("6. List all available appointments of a given department");
 				System.out.println("7. List total number of different types of appointments per doctor in descending order");
 				System.out.println("8. Find total number of patients per doctor with a given status");
-				System.out.println("9. < EXIT");
-				
+				System.out.println("9. List all the requests addressed by a given maintenance staff ID");
+				System.out.println("10. List all maintenance requests made by a given doctor name");
+				System.out.println("11. List the specialized departments for a given hospital name");
+				System.out.println("12. Find the appointment details for a given appointment number");
+				System.out.println("13. < EXIT");
+
 				switch (readChoice()){
 					case 1: AddDoctor(esql); break;
 					case 2: AddPatient(esql); break;
@@ -258,7 +262,11 @@ public class DBproject{//reference to physical database connection
 					case 6: ListAvailableAppointmentsOfDepartment(esql); break;
 					case 7: ListStatusNumberOfAppointmentsPerDoctor(esql); break;
 					case 8: FindPatientsCountWithStatus(esql); break;
-					case 9: keepon = false; break;
+					case 9: ListRequestsAddressedbyStaff(esql); break;
+					case 10: ListRequestsMadebyDoctor(esql); break;
+					case 11: DepartmentsOfHospital(esql); break;
+					case 12: DetailsOfAppointment(esql); break;
+					case 13: keepon = false; break;
 				}
 			}
 		}catch(Exception e){
@@ -323,28 +331,6 @@ public class DBproject{//reference to physical database connection
 	  }
    }
    
-   public static void Greeting(){
-      System.out.println(
-         "\n\n*******************************************************************************\n" +
-         "                 Welcome to your Hospital Database management System!     \n" +
-         "***********************************************************************************\n");
-         System.out.println();
-         System.out.println("--------------------------Welcome to---------------------------");
-         System.out.println("---------------------------------------------------------------");
-         System.out.println(" 88                                88                    88    ");
-         System.out.println(" 88                                     88               88    ");
-         System.out.println(" 88,dba,  ,adba,   ,adba  888888,  88 MM88MMM  ,aPYba,   88    ");
-         System.out.println(" 88   88 8b    d8 88      88    ad 88   8P     88   88   88    ");
-         System.out.println(" 88   88 8b    88  ,8888, 88   ad  88   8P    88     88  88    ");
-         System.out.println(" 88   88 8b    d8      88 88aad    88   8P P   88    88  88    ");
-         System.out.println(" 88   88  `YbdP'  aadba,  88       88   8PP     'aPY' 8P 88888 ");
-         System.out.println("                          88                                   ");
-         System.out.println("                          88                                   ");
-         System.out.println("---------------------------------------------------------------");
-         System.out.println();
-   }//end Greeting
-
-
 	public static void AddDoctor(DBproject esql) {//1.Add Doctor: Ask the user for details of a Doctor and add it to the database
 		try {
 			String query = "INSERT INTO Doctor (doctor_ID, name, specialty, did) VALUES (";
@@ -484,7 +470,7 @@ public class DBproject{//reference to physical database connection
 			
 			esql.executeUpdate(query);
 			System.out.print("\tYour entered data has successfully update\n");
-			String query2 = "Select * \nFrom Patient \nWhere patient_ID = "+ input5 + ";";
+			String query2 = "Select * \nFrom Patient \nWhere patient_ID = \'"+ input5 + "\';";
 			esql.executeQueryAndPrintResult(query2);
 		}catch(Exception e) {
 			System.err.println(e.getMessage());
@@ -499,7 +485,7 @@ public class DBproject{//reference to physical database connection
 			try {
 				did = in.readLine();
 				checkid(did);
-				String dcheck = "select doctor_ID \nfrom Doctor \nwhere doctor_ID = " + did +" ;";
+				String dcheck = "select doctor_ID \nfrom Doctor \nwhere doctor_ID = \'" + did +"\' ;";
 				int dd = esql.executeQueryAndPrintResult(dcheck);
 				if(dd == 0){
 					NoExist();
@@ -517,7 +503,7 @@ public class DBproject{//reference to physical database connection
 			try {
 				aid = in.readLine();
 				checkid(aid);
-				String acheck = "select appnt_ID \nfrom Appointment \nwhere appnt_ID = " + aid +" ;";
+				String acheck = "select appnt_ID \nfrom Appointment \nwhere appnt_ID = \'" + aid +"\' ;";
 				int aa = esql.executeQueryAndPrintResult(acheck);
 				if(aa == 0){
 					NoExist();
@@ -528,62 +514,82 @@ public class DBproject{//reference to physical database connection
 				continue;
 			}
 		}while(true);
-
-		
-		String query4_1 = "SELECT A.appnt_ID, A.adate, A.time_slot, A.status \nFROM Appointment A\nWHERE A.appnt_ID IN (SELECT appt_id \nFROM has_appointment H \nWHERE H.doctor_id = " + did + " AND H.appt_id = " + aid + " );";
-		List<List<String>> str = new ArrayList<>();
+		String queryAddCheck = "Select * \nfrom has_appointment \nWhere appt_id = \'" + aid + "\' AND doctor_id = \'" + did + "\';";
+		int row1 = esql.executeQueryAndPrintResult(queryAddCheck);
+		if(row1 == 0){
+		System.out.print("\t\nYou are makeing a new appiontment for selected doctor and appiontment id for this patient\n");
+		String queryADD = "INSERT INTO has_appointment(appt_id, doctor_id) VALUES (\'" + aid + "\', \'" + did + "\');"; 
+		esql.executeUpdate(queryADD);
+		System.out.print("\t\nYou have successfully made a appiontment for this patient\n");
+		}
+		String query4_1 = "SELECT A.appnt_ID, A.adate, A.time_slot, A.status \nFROM Appointment A\nWHERE A.appnt_ID IN (SELECT appt_id \nFROM has_appointment H \nWHERE H.doctor_id = \'" + did + "\' AND H.appt_id = \'" + aid + "\' );";
+		System.out.println("\nList of show you chosen appiontment: \n");
 		try{
-			str = esql.executeQueryAndReturnResult(query4_1);
+			esql.executeQueryAndReturnResult(query4_1);
 		}catch(SQLException e) {
 			System.err.println(e.getMessage());
 		}
-		System.out.println("List of show you chosen appiontment: \n" + str);
+			
+		String query1 = "SELECT A.status \nFROM Appointment A\nWHERE A.appnt_ID IN (SELECT appt_id \nFROM has_appointment H \nWHERE H.doctor_id = \'" + did + "\' AND H.appt_id = \'" + aid + "\' ) AND A.status = \'AV\';";
+		int row2 = esql.executeQueryAndPrintResult(query1);
+		String query2 = "SELECT A.status \nFROM Appointment A\nWHERE A.appnt_ID IN (SELECT appt_id \nFROM has_appointment H \nWHERE H.doctor_id = \'" + did + "\' AND H.appt_id = \'" + aid + "\' ) AND A.status = \'AC\';";
+		int row3 = esql.executeQueryAndPrintResult(query2);
+		String query3 = "SELECT A.status \nFROM Appointment A\nWHERE A.appnt_ID IN (SELECT appt_id \nFROM has_appointment H \nWHERE H.doctor_id = \'" + did + "\' AND H.appt_id = \'" + aid + "\' ) AND A.status = \'WL\';";
+		int row4 = esql.executeQueryAndPrintResult(query3);
+		String query4 = "SELECT A.status \nFROM Appointment A\nWHERE A.appnt_ID IN (SELECT appt_id \nFROM has_appointment H \nWHERE H.doctor_id = \'" + did + "\' AND H.appt_id = \'" + aid + "\' ) AND A.status = \'PA\';";
+		int row5 = esql.executeQueryAndPrintResult(query4);
+		if(row2 !=0){
 
-		String query4_2 = "SELECT A.status \nFROM Appointment A\nWHERE A.appnt_ID IN (SELECT appt_id \nFROM has_appointment H \nWHERE H.doctor_id = " + did + " AND H.appt_id = " + aid + " );";
-		List<List<String>> str2 = new ArrayList<>();
-		try{
-			str2 = esql.executeQueryAndReturnResult(query4_2);
-		}catch(SQLException e) {
-			System.err.println(e.getMessage());
-		}
-		
-		if(query4_2.matches("(^AV$)")){
-
-				String queryAV = "UPDATE Appointment \nSET status = 'AC' \nWHERE appnt_ID = " + aid + ";";
-				String queryAV1 = "SET number_of_appts + 1 \nfrom Patient where patient_ID = " + pid +";";
+				String queryAV = "UPDATE Appointment \nSET status = 'AC' \nWHERE appnt_ID = \'" + aid + "\';";
+				String queryAV1 = "UPDATE Patient \nSET number_of_appts = (number_of_appts + 1) \nwhere patient_ID = \'" + pid +"\';";
+				String queryAV2 = "Select P.patient_ID, P.name, A.appnt_ID, A.adate, A.time_slot, A.status, D.doctor_id, D.name \nfrom Patient P, Doctor D, Appointment A \nwhere D.doctor_ID = \'" + did +"\' AND A.appnt_ID = \'" + aid + "\' AND P.patient_ID = \'" + pid +"\';"; 
 				try{
 					esql.executeUpdate(queryAV);
-					esql.executeQuery(queryAV1);
+					esql.executeUpdate(queryAV1);
+					esql.executeQueryAndPrintResult(queryAV2);
 					}catch(SQLException e) {
 						System.err.println(e.getMessage());
 					}	
-				System.out.println("\n\nwe successfully put you in to the appiontment\n");
+				System.out.println("\n\nwe successfully put you in to the appiontment status from AV to AC\n");
+				
 			
 		}
-		else if(query4_2.matches("(^AC$)")){
-				String queryAC = "UPDATE Appointment \nSET status = 'WL' \nWHERE appnt_ID = " + aid + ";";	
-				String queryAC1 = "SET number_of_appts + 1 \nfrom Patient where patient_ID = " + pid +";";
+		
+		 if(row3 !=0){
+				String queryAC = "UPDATE Appointment \nSET status = 'WL' \nWHERE appnt_ID = \'" + aid + "\';";	
+				String queryAC1 = "UPDATE Patient \nSET number_of_appts = (number_of_appts + 1) \nwhere patient_ID = \'" + pid +"\';";
+				String queryAC2 = "Select P.patient_ID, P.name, A.appnt_ID, A.adate, A.time_slot, A.status, D.doctor_id, D.name \nfrom Patient P, Doctor D, Appointment A \nwhere D.doctor_ID = \'" + did +"\' AND A.appnt_ID = \'" + aid +"\' AND P.patient_ID = \'" + pid +"\';"; 
 				try{
 					esql.executeUpdate(queryAC);
-					esql.executeQuery(queryAC1);
+					esql.executeUpdate(queryAC1);
+					esql.executeQueryAndPrintResult(queryAC2);
 					}catch(SQLException e) {
 						System.err.println(e.getMessage());
 					}	
-				System.out.println("\n\nwe successfully put you in to waitlist\n");
+				System.out.println("\n\nwe successfully put you in to the appiontment status from AC to WL\n");
+				
 			
 		}
-		else if(query4_2.matches("(^WL$)")){
-			String queryWL = "SET number_of_appts + 1 \nfrom Patient where patient_ID = " + pid +";";
+		
+		
+		 if(row4 !=0){
+			String queryWL = "UPDATE Patient \nSET number_of_appts = (number_of_appts + 1) \nwhere patient_ID = \'" + pid +"\';";
+			String queryWL1 = "Select P.patient_ID, P.name, A.appnt_ID, A.adate, A.time_slot, A.status, D.doctor_id, D.name \nfrom Patient P, Doctor D, Appointment A \nwhere D.doctor_ID = \'" + did +"\' AND A.appnt_ID = \'" + aid +"\' AND P.patient_ID = \'" + pid +"\';"; 
 				try{
 					esql.executeUpdate(queryWL);
+					esql.executeQueryAndPrintResult(queryWL1);
 					}catch(SQLException e) {
 						System.err.println(e.getMessage());
 					}	
 			System.out.println("\n\nwe have add you to the waitlist of this appiontment\n");
 			
+			
 		}
-		else if(query4_2.matches("(^PA$)")){
-			System.out.println("\n\nwe are sorry, the appiontment you want to book is already past\n");			
+		
+		
+		 if(row5!=0){
+			System.out.println("\n\nwe are sorry, the appiontment you booked is already past\n");
+						
 		}
 
 		}catch(Exception e) {
@@ -598,12 +604,14 @@ public class DBproject{//reference to physical database connection
 			System.out.print("\tPlease enter doctor id: ");
 			String input15 = in.readLine();
 			query += input15;
-			query += "\' AND (adate BETWEEN \'"; 
+			query += "\' AND (A.adate BETWEEN \'"; 
 			System.out.print("\tPlease enter first date of date range of the appt (MM/DD/YYYY): ");
 			String input16 = in.readLine();
+			checkdate(input16);
 			query += (input16 + "\' AND \'");
 			System.out.print("\tPlease enter second date of date range of the appt (MM/DD/YYYY): ");
 			String input17 = in.readLine();
+			checkdate(input17);
 			query += (input17 + "\');");
 						
 			int row = esql.executeQueryAndPrintResult(query);
@@ -614,16 +622,19 @@ public class DBproject{//reference to physical database connection
 	}
 	public static void ListAvailableAppointmentsOfDepartment(DBproject esql) {//6 List all available appointments of a given department:
 		try {
-			String query = "SELECT A.appnt_ID, A.adate, A.time_slot FROM Appointment A, has_appointment H, Doctor D, Department DEPT \nWHERE A.status = \'AV\' AND A.appnt_ID = H.appt_id AND H.doctor_id = D.doctor_ID AND D.did = DEPT.dept_ID AND DEPT.name =  \' ";
+			String query = "SELECT DISTINCT A.appnt_ID, D.name, A.adate, A.time_slot FROM Appointment A, has_appointment H, Doctor D, Department DEPT \nWHERE DEPT.name = \'";
 			System.out.print("\tPlease enter department name: ");
 			String dname = in.readLine();
-			query += dname;
-			query += "\' AND A.adate = \'"; 
-			System.out.print("\tPlease enter the specific date: (MM/DD/YEAR) ");
+			query += dname + "\' ";
+			System.out.print("\tPlease enter the specific date: (MM/DD/YEAR):");
 			String date = in.readLine();
-			query += (date + "\');");
+			checkdate(date);
+			query += " AND A.adate = \'" + date + "\' AND A.status = \'AV\' AND A.appnt_ID = H.appt_id AND H.doctor_id = D.doctor_ID;"; 
+
+			System.out.print("\t\nThe list below is all available appiontment for the Department you entered and the date you select\n: ");
 			int row = esql.executeQueryAndPrintResult(query);
 			System.out.println("total row(s): " + row);
+			
 		}catch(Exception e) {
 			System.err.println(e.getMessage());
 		}
@@ -643,12 +654,73 @@ public class DBproject{//reference to physical database connection
 		try {
 			System.out.print("\tPlease enter appointment status ex:(AC, AV, PA, WL): ");
 			String input18 = in.readLine();
-			String query = "SELECT H.doctor_id, COUNT( DISTINCT S.pid ) AS NPATIENT FROM Appointment A, has_appointment H, searches S WHERE S.aid = A.appnt_ID AND A.appnt_ID = H.appt_id GROUP BY H.doctor_id HAVING A.status = '" + input18 + "' ;" ;
+			String query = "SELECT H.doctor_id, A.status, COUNT( DISTINCT S.pid ) AS NPATIENT FROM Appointment A, has_appointment H, searches S WHERE S.aid = A.appnt_ID AND A.appnt_ID = H.appt_id GROUP BY H.doctor_id, A.status HAVING A.status = \'";
+			checkStatus(input18);
+			//"SELECT H.doctor_id, COUNT( DISTINCT S.pid ) AS NPATIENT FROM Appointment A, has_appointment H, searches S WHERE S.aid = A.appnt_ID AND A.appnt_ID = H.appt_id GROUP BY H.doctor_id HAVING A.status = '" + input18 + "' ;" ;
+			query += (input18 + "\';");
 			
+
 			int row = esql.executeQueryAndPrintResult(query);
 			System.out.println("total row(s): " + row);
 		}catch(Exception e) {
 			System.err.println(e.getMessage());
 		}
 	}
+
+	public static void ListRequestsAddressedbyStaff(DBproject esql) {//9 Given a maintenance staff ID, list all the requests addressed by the staff.
+		try {
+			String query = "SELECT patient_per_hour, dept_name, time_slot, did FROM request_maintenance WHERE sid = ";
+			System.out.print("\tPlease enter staff id: ");
+			String input19 = in.readLine();
+			query += (input19 + ";");
+
+			int row = esql.executeQueryAndPrintResult(query);
+			System.out.println("total row(s): " + row);
+		}catch(Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	public static void ListRequestsMadebyDoctor(DBproject esql) {//10 Given a doctor name, list all maintenance requests made by the doctor.
+		try {
+			String query = "SELECT R.patient_per_hour, R.dept_name, R.time_slot, R.sid FROM request_maintenance R, Doctor D WHERE R.did = D.doctor_ID AND D.name = \'";
+			System.out.print("\tPlease enter doctor name: ");
+			String input20 = in.readLine();
+			query += (input20 + "\';");
+
+			int row = esql.executeQueryAndPrintResult(query);
+			System.out.println("total row(s): " + row);
+		}catch(Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	public static void DepartmentsOfHospital(DBproject esql) {//11 Given a hospital name, find the specialized departments in the hospital.
+		try {
+			String query = "SELECT D.name FROM Hospital H, Department D WHERE H.hospital_ID = D.hid AND H.name = \'";
+			System.out.print("\tPlease enter hospital name: ");
+			String input21 = in.readLine();
+			query += (input21 + "\';");
+
+			int row = esql.executeQueryAndPrintResult(query);
+			System.out.println("total row(s): " + row);
+		}catch(Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
+
+	public static void DetailsOfAppointment(DBproject esql) {//12 Given an appointment number, find the appointment details (time slot, doctor name, department, etc.
+		try {
+			String query = "SELECT D.name, A.time_slot, Dept.name FROM Appointment A, has_appointment H, Doctor D, Department Dept WHERE A.appnt_ID = H.appt_id AND H.doctor_id = D.doctor_ID AND D.did = Dept.dept_ID AND A.appnt_ID = ";
+			System.out.print("\tPlease enter appointment id: ");
+			String input22 = in.readLine();
+			query += (input22 + ";");
+
+			int row = esql.executeQueryAndPrintResult(query);
+			System.out.println("total row(s): " + row);
+		}catch(Exception e) {
+			System.err.println(e.getMessage());
+		}
+	}
+	
 }
