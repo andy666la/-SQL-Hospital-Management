@@ -180,7 +180,7 @@ public class DBproject{//reference to physical database connection
 		}catch (SQLException e){// ignored.
 		}//end try
 	}//end cleanup
-1
+
 	/**
 	 * The main execution method
 	 * 
@@ -274,6 +274,9 @@ public class DBproject{//reference to physical database connection
 		return input;
 	}//end readChoice
 
+	static void NoExist() throws Exception { 
+		  throw new IllegalArgumentException("ERROR: The id you input is not in our database, please retry");
+   }
 	
 	static void checkid(String str) throws Exception { //any id
 	  if (!str.matches("^[0-9]*$")) { 
@@ -469,12 +472,21 @@ public class DBproject{//reference to physical database connection
 			System.err.println(e.getMessage());
 		}
 		}
+		
+		
+		
 		String did;
 		do {
 			System.out.print("\tPlease enter doctor id for searching his/her appiontment : ");
 			try {
 				did = in.readLine();
 				checkid(did);
+				String dcheck = "select doctor_ID \nfrom Doctor \nwhere doctor_ID = " + did +" ;";
+				int dd = esql.executeQueryAndPrintResult(dcheck);
+				if(dd == 0){
+					NoExist();
+				}
+				
 				break;
 			}catch (Exception e) {
 				System.out.println("Invalid input");
@@ -487,6 +499,11 @@ public class DBproject{//reference to physical database connection
 			try {
 				aid = in.readLine();
 				checkid(aid);
+				String acheck = "select appnt_ID \nfrom Appointment \nwhere appnt_ID = " + aid +" ;";
+				int aa = esql.executeQueryAndPrintResult(acheck);
+				if(aa == 0){
+					NoExist();
+				}
 				break;
 			}catch (Exception e) {
 				System.out.println("Invalid input");
